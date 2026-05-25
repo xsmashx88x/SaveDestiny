@@ -264,10 +264,10 @@
         <a href="https://www.change.org/p/petition-sony-to-develop-destiny-3" target="_blank" class="btn">Sign the Petition</a>
         
         <!-- ID 3: rescan-btn -->
-        <button id="rescan-btn" onclick="window.tacticalRefresh()" style="background:transparent; border:none; color:var(--d2-gold); font-size:0.6rem; cursor:pointer; margin-top:10px; display:block; width:100%; text-align:center; letter-spacing:1.5px; text-transform:uppercase;">
+ <!--       <button id="rescan-btn" onclick="window.tacticalRefresh()" style="background:transparent; border:none; color:var(--d2-gold); font-size:0.6rem; cursor:pointer; margin-top:10px; display:block; width:100%; text-align:center; letter-spacing:1.5px; text-transform:uppercase;">
             [ Send Tactical Pulse ]
         </button>
-        
+ -->       
         <p class="note">IMPORTANT: Signing is free. Paying only supports the website, not the game. Just sign and exit.</p>
     </div>
 </div>
@@ -351,73 +351,208 @@
     </div>
 
     <script>
-        function launchFeed(tag) {
-            const url = `https://twitter.com/search?q=%23${tag}&f=live`;
-            const width = 550;
-            const height = 800;
-            const left = (window.innerWidth / 2) - (width / 2);
-            const top = (window.innerHeight / 2) - (height / 2);
-            
-            window.open(url, "VanguardIntel", `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,status=no,toolbar=no`);
-        }
+ function launchFeed(tag) {
+    const url = `https://twitter.com/search?q=%23${tag}&f=live`;
+    const width = 550;
+    const height = 800;
+    const left = (window.innerWidth / 2) - (width / 2);
+    const top = (window.innerHeight / 2) - (height / 2);
 
-(function() {
-    const PID = "38318029";
-    const BASELINE = "199,235"; // If all else fails, show this.
+    window.open(
+        url,
+        "VanguardIntel",
+        `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,status=no,toolbar=no`
+    );
+}
 
-    // 1. IMMEDIATE ACTION: Load from memory before doing anything else
+(function () {
+
+    const BASELINE = "200,586";
+    const TARGET_URL = "https://www.change.org/p/petition-sony-to-develop-destiny-3";
+
+    const PROXIES = [
+        url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+        url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+        url => `https://r.jina.ai/http://${url.replace(/^https?:\/\//, '')}`
+    ];
+
+    // -----------------------------
+    // INITIAL LOAD
+    // -----------------------------
     window.addEventListener('DOMContentLoaded', () => {
+
         const countDisplay = document.getElementById('sig-count');
         const statusDisplay = document.getElementById('sig-status');
+
         const cached = localStorage.getItem('vanguard_final_count');
 
         if (countDisplay) {
-            countDisplay.innerText = cached ? Number(cached).toLocaleString() : BASELINE;
+            countDisplay.innerText = cached
+                ? Number(cached).toLocaleString()
+                : BASELINE;
         }
+
         if (statusDisplay) {
             statusDisplay.innerText = "// Signal: Syncing Tower...";
         }
-        
-        // Start the actual network sync
+
         syncVanguard();
     });
 
+    // -----------------------------
+    // MAIN SYNC
+    // -----------------------------
     async function syncVanguard() {
+
         const countDisplay = document.getElementById('sig-count');
         const statusDisplay = document.getElementById('sig-status');
+
         if (!countDisplay || !statusDisplay) return;
 
-        // Using AllOrigins with a 'raw' bypass to avoid JSON errors
-        const target = `https://www.change.org/api-proxy/petitions/${PID}`;
-        const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(target)}`;
+        for (const proxyFn of PROXIES) {
 
-        try {
-            const response = await fetch(proxy);
-            if (!response.ok) throw new Error('Blocked');
-            
-            const data = await response.json();
-            
-            if (data && data.total_signature_count) {
-                const total = data.total_signature_count;
-                countDisplay.innerText = Number(total).toLocaleString();
-                statusDisplay.innerText = "// Signal: Secure Uplink Established";
-                statusDisplay.style.color = "var(--d2-gold)";
-                localStorage.setItem('vanguard_final_count', total);
+            try {
+
+                const proxyURL = proxyFn(TARGET_URL);
+
+                const response = await fetch(proxyURL, {
+                    method: "GET",
+                    headers: {
+                        "Accept": "text/html,application/json"
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const html = await response.text();
+
+                const count = extractSignatureCount(html);
+
+                if (count) {
+
+                    countDisplay.innerText = Number(count).toLocaleString();
+
+                    statusDisplay.innerText =
+                        "// Signal: Secure Uplink Established";
+
+                    statusDisplay.style.color = "var(--d2-gold)";
+
+                    localStorage.setItem(
+                        "vanguard_final_count",
+                        count
+                    );
+
+                    console.log(
+                        "[VANGUARD] Synced via:",
+                        proxyURL
+                    );
+
+                    return;
+                }
+
+            } catch (err) {
+
+                console.warn(
+                    "[VANGUARD] Proxy failed:",
+                    err
+                );
             }
-        } catch (err) {
-            console.log("Vanguard Uplink Jammed. Ghost Relay Active.");
-            statusDisplay.innerText = "// Signal Weak: Ghost Relay Active";
-            statusDisplay.style.color = "#ff6060";
         }
+
+        // TOTAL FAILURE FALLBACK
+        statusDisplay.innerText =
+            "// Signal Weak: Ghost Relay Active";
+
+        statusDisplay.style.color = "#ff6060";
+
+        console.warn(
+            "[VANGUARD] All uplinks failed."
+        );
     }
 
-    // 2. GLOBAL BUTTON LOGIC (Fixed for the onclick error)
+    // -----------------------------
+    // EXTRACTOR
+    // -----------------------------
+    function extractSignatureCount(html) {
+
+        // METHOD 1
+        let match = html.match(
+            /"signatureCount"\s*:\s*\{\s*"total"\s*:\s*(\d+)/i
+        );
+
+        if (match && match[1]) {
+            return parseInt(match[1], 10);
+        }
+
+        // METHOD 2
+        match = html.match(
+            /"display_count"\s*:\s*"?([\d,]+)"?/i
+        );
+
+        if (match && match[1]) {
+            return parseInt(
+                match[1].replace(/,/g, ''),
+                10
+            );
+        }
+
+        // METHOD 3
+        match = html.match(
+            /"supporters"\s*:\s*(\d+)/i
+        );
+
+        if (match && match[1]) {
+            return parseInt(match[1], 10);
+        }
+
+        // METHOD 4
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, "text/html");
+
+        const scripts = [...doc.querySelectorAll("script")];
+
+        for (const script of scripts) {
+
+            const txt = script.textContent || "";
+
+            let m = txt.match(
+                /"signatureCount"\s*:\s*\{\s*"total"\s*:\s*(\d+)/i
+            );
+
+            if (m && m[1]) {
+                return parseInt(m[1], 10);
+            }
+
+            m = txt.match(
+                /"display_count"\s*:\s*"?([\d,]+)"?/i
+            );
+
+            if (m && m[1]) {
+                return parseInt(
+                    m[1].replace(/,/g, ''),
+                    10
+                );
+            }
+        }
+
+        return null;
+    }
+
+    // -----------------------------
+    // MANUAL REFRESH
+    // -----------------------------
     let isPulseActive = false;
-    window.tacticalRefresh = async function() {
+
+    window.tacticalRefresh = async function () {
+
         if (isPulseActive) return;
+
         isPulseActive = true;
-        
+
         const btn = document.getElementById('rescan-btn');
+
         if (btn) {
             btn.innerText = "[ PULSING... ]";
             btn.style.opacity = "0.5";
@@ -426,18 +561,23 @@
         await syncVanguard();
 
         setTimeout(() => {
+
             isPulseActive = false;
+
             if (btn) {
                 btn.innerText = "[ Send Tactical Pulse ]";
                 btn.style.opacity = "1";
             }
-        }, 15000); // 15s cooldown
+
+        }, 8000);
     };
 
-    // Auto-refresh every 3 minutes
+    // -----------------------------
+    // AUTO REFRESH
+    // -----------------------------
     setInterval(syncVanguard, 180000);
-})();
 
+})();
     </script>
 
     <p class="note" style="margin-top: 30px; text-align: center; color: #666; font-style: normal; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
