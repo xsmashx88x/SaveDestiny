@@ -250,7 +250,11 @@
                     <span class="step-label">Vanguard Directive</span>
                     <h2>The Petition</h2>
                     <p>Demand Sony develop Destiny 3. We need every Guardian to put their name on the record. Numbers are the only thing that will change the course.</p>
-                </div>
+
+        <div style="color: var(--d2-gold); font-family: 'Oswald', sans-serif; font-size: 1.4rem; margin: 10px 0; padding: 10px; background: rgba(245, 175, 9, 0.05); border-left: 3px solid var(--d2-gold);">
+            <span id="sig-count">SCANNING...</span> <span style="font-size: 0.8rem; opacity: 0.7;">GUARDIANS SIGNED</span>
+        </div>
+    </div>
                 <div>
                     <a href="https://www.change.org/p/petition-sony-to-develop-destiny-3" target="_blank" rel="noopener noreferrer" class="btn">Sign the Petition</a>
                     <p class="note">IMPORTANT: Signing is free. Paying only supports the website, not the game. Just sign and exit.</p>
@@ -345,6 +349,63 @@
             
             window.open(url, "VanguardIntel", `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,status=no,toolbar=no`);
         }
+
+    async function getVanguardSignatures() {
+        const petitionUrl = "https://www.change.org/p/petition-sony-to-develop-destiny-3";
+        // We use AllOrigins to get the RAW HTML of the page
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(petitionUrl)}`;
+        
+        const display = document.getElementById('sig-count');
+        const status = document.getElementById('sig-status');
+
+        try {
+            const response = await fetch(proxyUrl);
+            if (!response.ok) throw new Error('Proxy Jammed');
+            
+            const data = await response.json();
+            const html = data.contents; // This is the full HTML of the Change.org page
+
+            // This Regex looks exactly for the aria-label you found: 
+            // aria-label="198,598 of verified signatures"
+            const regex = /aria-label="([\d,]+) of verified signatures"/;
+            const match = html.match(regex);
+
+            if (match && match[1]) {
+                // match[1] will be "198,598"
+                const countString = match[1];
+                
+                // Display it exactly as it appears on Change.org
+                display.innerText = countString; 
+                
+                status.innerText = "// Signal: Secure Uplink Established";
+                status.style.color = "var(--d2-gold)";
+                
+                // Save to local memory
+                localStorage.setItem('vanguard_sigs_verified', countString);
+            } else {
+                throw new Error('Pattern Not Found');
+            }
+        } catch (e) {
+            console.error("Vanguard Scraper Error:", e);
+            
+            // Fallback to last successful scan
+            const cached = localStorage.getItem('vanguard_sigs_verified');
+            if (cached) {
+                display.innerText = cached;
+                status.innerText = "// Signal Weak: Using Last Verified Data";
+            } else {
+                display.innerText = "198,600+"; 
+                status.innerText = "// Signal Lost: Using Manual Estimate";
+            }
+            status.style.color = "#ff6060";
+        }
+    }
+
+    // Run on startup
+    getVanguardSignatures();
+
+    // Refresh every 5 minutes
+    setInterval(getVanguardSignatures, 300000);
     </script>
 
     <p class="note" style="margin-top: 30px; text-align: center; color: #666; font-style: normal; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
