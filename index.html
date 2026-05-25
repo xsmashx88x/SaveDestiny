@@ -375,158 +375,86 @@
 }
 
 (function () {
-
-    const BASELINE = "200,586";
+    // UPDATED BASELINE - Set this to the current number you see on the petition
+    const BASELINE = "201,300"; 
     const TARGET_URL = "https://www.change.org/p/petition-sony-to-develop-destiny-3";
 
+    // New Proxy List - includes more reliable "unblocker" proxies
     const PROXIES = [
-        url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
         url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-        url => `https://r.jina.ai/http://${url.replace(/^https?:\/\//, '')}`
+        url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+        url => `https://thingproxy.freeboard.io/fetch/${url}`
     ];
 
-    // -----------------------------
-    // INITIAL LOAD
-    // -----------------------------
     window.addEventListener('DOMContentLoaded', () => {
-
         const countDisplay = document.getElementById('sig-count');
-        const statusDisplay = document.getElementById('sig-status');
-
         const cached = localStorage.getItem('vanguard_final_count');
-
         if (countDisplay) {
-            countDisplay.innerText = cached
-                ? Number(cached).toLocaleString()
-                : BASELINE;
+            countDisplay.innerText = cached ? Number(cached).toLocaleString() : BASELINE;
         }
-
-        if (statusDisplay) {
-            statusDisplay.innerText = "// Signal: Syncing Tower...";
-        }
-
         syncVanguard();
     });
 
-    // -----------------------------
-    // MAIN SYNC
-    // -----------------------------
     async function syncVanguard() {
-
         const countDisplay = document.getElementById('sig-count');
         const statusDisplay = document.getElementById('sig-status');
+        
+        console.log("[VANGUARD] Attempting synchronization...");
 
-        if (!countDisplay || !statusDisplay) return;
-
-        for (const proxyFn of PROXIES) {
-
+        for (let i = 0; i < PROXIES.length; i++) {
             try {
+                const proxyURL = PROXIES[i](TARGET_URL);
+                console.log(`[VANGUARD] Trying Proxy ${i+1}...`);
 
-                const proxyURL = proxyFn(TARGET_URL);
-
-                const response = await fetch(proxyURL, {
-                    method: "GET",
-                    headers: {
-                        "Accept": "text/html,application/json"
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
+                const response = await fetch(proxyURL);
+                if (!response.ok) throw new Error(`Proxy response not OK (${response.status})`);
 
                 const html = await response.text();
-
                 const count = extractSignatureCount(html);
 
-                if (count) {
-
+                if (count && count > 100000) { // Safety check to ensure it's a real number
+                    console.log("[VANGUARD] Success! New Count:", count);
                     countDisplay.innerText = Number(count).toLocaleString();
-
-                    statusDisplay.innerText =
-                        "// Signal: Secure Uplink Established";
-
+                    statusDisplay.innerText = "// Signal: Secure Uplink Established";
                     statusDisplay.style.color = "var(--d2-gold)";
-
-                    localStorage.setItem(
-                        "vanguard_final_count",
-                        count
-                    );
-
-                    console.log(
-                        "[VANGUARD] Synced via:",
-                        proxyURL
-                    );
-
-                    return;
+                    localStorage.setItem("vanguard_final_count", count);
+                    return; // Stop trying other proxies
+                } else {
+                    console.warn(`[VANGUARD] Proxy ${i+1} returned page but no count found.`);
                 }
 
             } catch (err) {
-
-                console.warn(
-                    "[VANGUARD] Proxy failed:",
-                    err
-                );
+                console.error(`[VANGUARD] Proxy ${i+1} Error:`, err.message);
             }
         }
 
-        // TOTAL FAILURE FALLBACK
-        statusDisplay.innerText =
-            "// Signal Weak: Ghost Relay Active";
-
+        console.error("[VANGUARD] All proxies failed to find the signature count.");
+        statusDisplay.innerText = "// Signal Weak: Data Packet Loss";
         statusDisplay.style.color = "#ff6060";
-
-        console.warn(
-            "[VANGUARD] All uplinks failed."
-        );
     }
-
     // -----------------------------
     // EXTRACTOR
     // -----------------------------
-function extractSignatureCount(html) {
-    // 1. Try to find the raw JSON state (Most Reliable)
-    // We break the strings below so the HTML parser doesn't get confused
-    const stateMarker = 'window.__INITIAL_STATE__=';
-    const endMarker = ';</' + 'script>'; 
-
-    if (html.includes(stateMarker)) {
+    function extractSignatureCount(html) {
+        // Method 1: JSON State (Standard)
         try {
-            const start = html.indexOf(stateMarker) + stateMarker.length;
-            const end = html.indexOf(endMarker, start);
-            
-            if (end !== -1) {
-                const jsonText = html.substring(start, end);
-                const state = JSON.parse(jsonText);
-                
-                // Navigate the Change.org state tree
+            const match = html.match(/window\.__INITIAL_STATE__=(.*?);<\/script>/);
+            if (match) {
+                const state = JSON.parse(match[1]);
                 const petitions = state.shared.petitions;
-                const petitionId = Object.keys(petitions)[0];
-                const total = petitions[petitionId].signatureCount.total;
-                
-                if (total) return total;
+                const id = Object.keys(petitions)[0];
+                return petitions[id].signatureCount.total;
             }
-        } catch (e) {
-            console.warn("[VANGUARD] JSON extraction failed, trying regex...");
-        }
+        } catch (e) {}
+
+        // Method 2: Raw Text Regex (Fallback)
+        // Looks for "signatureCount":{"total":123456}
+        const regex = /"signatureCount":\s*{\s*"total":\s*(\d+)/;
+        const textMatch = html.match(regex);
+        if (textMatch) return parseInt(textMatch[1]);
+
+        return null;
     }
-
-    // 2. Regex Fallbacks (If JSON structure changed)
-    const patterns = [
-        /"signatureCount"\s*:\s*{\s*"total"\s*:\s*(\d+)/i,
-        /"display_count"\s*:\s*"?([\d,]+)"?/i,
-        /"total_signatures"\s*:\s*(\d+)/i
-    ];
-
-    for (const pattern of patterns) {
-        const match = html.match(pattern);
-        if (match && match[1]) {
-            return parseInt(match[1].replace(/,/g, ''), 10);
-        }
-    }
-
-    return null;
-}
 
     // -----------------------------
     // MANUAL REFRESH
@@ -563,7 +491,7 @@ function extractSignatureCount(html) {
     // -----------------------------
     // AUTO REFRESH
     // -----------------------------
-    setInterval(syncVanguard, 600000);
+    setInterval(syncVanguard, 300000);
 
 })();
     </script>
