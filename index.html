@@ -251,15 +251,24 @@
                     <h2>The Petition</h2>
                     <p>Demand Sony develop Destiny 3. We need every Guardian to put their name on the record. Numbers are the only thing that will change the course.</p>
 
-        <div style="color: var(--d2-gold); font-family: 'Oswald', sans-serif; font-size: 1.4rem; margin: 10px 0; padding: 10px; background: rgba(245, 175, 9, 0.05); border-left: 3px solid var(--d2-gold);">
-            <span id="sig-count">SCANNING...</span> <span style="font-size: 0.8rem; opacity: 0.7;">GUARDIANS SIGNED</span>
-        </div>
-    </div>
+                    <!-- Signature Display -->
+                    <div style="color: var(--d2-gold); font-family: 'Oswald', sans-serif; font-size: 1.4rem; margin: 10px 0; padding: 10px; background: rgba(245, 175, 9, 0.05); border-left: 3px solid var(--d2-gold);">
+                        <span id="sig-count">SCANNING...</span> <span style="font-size: 0.8rem; opacity: 0.7;">GUARDIANS SIGNED</span>
+                    </div>
+                    
+                    <!-- Signal Status (This fixes the console error) -->
+                    <p id="sig-status" style="font-size: 0.65rem; color: #555; margin: 0; text-transform: uppercase; letter-spacing: 1px;">
+                        // Initializing Uplink...
+                    </p>
+                </div>
                 <div>
                     <a href="https://www.change.org/p/petition-sony-to-develop-destiny-3" target="_blank" rel="noopener noreferrer" class="btn">Sign the Petition</a>
-<button id="rescan-btn" onclick="tacticalRefresh()" style="background:transparent; border:none; color:var(--d2-gold); font-size:0.6rem; cursor:pointer; margin-top:10px; display:block; width:100%; text-align:center; letter-spacing:1.5px; text-transform:uppercase;">
-    [ Send Tactical Pulse ]
-</button>
+                    
+                    <!-- Tactical Pulse Button -->
+                    <button id="rescan-btn" onclick="tacticalRefresh()" style="background:transparent; border:none; color:var(--d2-gold); font-size:0.6rem; cursor:pointer; margin-top:10px; display:block; width:100%; text-align:center; letter-spacing:1.5px; text-transform:uppercase;">
+                        [ Send Tactical Pulse ]
+                    </button>
+                    
                     <p class="note">IMPORTANT: Signing is free. Paying only supports the website, not the game. Just sign and exit.</p>
                 </div>
             </div>
@@ -353,40 +362,44 @@
             window.open(url, "VanguardIntel", `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,status=no,toolbar=no`);
         }
 
+    // TARGET: Destiny 3 Petition
     const PETITION_ID = "38318029"; 
     const API_URL = `https://www.change.org/api-proxy/petitions/${PETITION_ID}`;
     
-    // We use corsproxy.io - it's currently the fastest for JSON-specific pings
-    const PROXY_URL = `https://corsproxy.io/?${encodeURIComponent(API_URL)}`;
+    // Switch to AllOrigins - it's more stable for JSON content
+    const PROXY_URL = `https://api.allorigins.win/get?url=${encodeURIComponent(API_URL)}`;
 
     async function syncVanguardSignal() {
         const display = document.getElementById('sig-count');
         const status = document.getElementById('sig-status');
 
-        // 1. INSTANT LOAD: Immediately show the last known number from memory
+        // SAFETY CHECK: If the elements are missing, stop the script so it doesn't error
+        if (!display || !status) {
+            console.error("Vanguard Error: HTML IDs 'sig-count' or 'sig-status' are missing!");
+            return;
+        }
+
+        // LOAD CACHE (Instant Display)
         const cachedCount = localStorage.getItem('vanguard_sigs_api');
         if (cachedCount) {
             display.innerText = Number(cachedCount).toLocaleString();
-            status.innerText = "// Signal: Syncing with Tower...";
         }
 
         try {
-            // 2. ULTRA-LIGHT FETCH: Only pulls 1KB of data
             const response = await fetch(PROXY_URL);
-            if (!response.ok) throw new Error('Jammed');
+            if (!response.ok) throw new Error('Uplink Jammed');
             
-            const data = await response.json();
+            const rawData = await response.json();
+            // AllOrigins wraps the API response in a string called .contents
+            const data = JSON.parse(rawData.contents);
             
-            // The API returns the exact number in 'total_signature_count'
             if (data && data.total_signature_count) {
                 const count = data.total_signature_count;
                 
-                // 3. SMOOTH UPDATE: Only update the UI if the number changed
                 display.innerText = Number(count).toLocaleString();
                 status.innerText = "// Signal: Secure Uplink Established";
                 status.style.color = "var(--d2-gold)";
                 
-                // Save to memory for the next instant load
                 localStorage.setItem('vanguard_sigs_api', count);
             }
         } catch (err) {
@@ -394,17 +407,31 @@
             status.innerText = "// Signal Weak: Ghost Relay Active";
             status.style.color = "#ff6060";
             
-            // Fallback to manual estimate if everything fails and cache is empty
-            if (!display.innerText || display.innerText === "SCANNING...") {
-                display.innerText = "199,203+"; 
+            if (display.innerText === "SCANNING...") {
+                display.innerText = "199,203+"; // Fallback if no cache exists
             }
         }
     }
 
-    // Run immediately on page load
-    syncVanguardSignal();
+    // TACTICAL REFRESH LOCK
+    let pulseLock = false;
+    async function tacticalRefresh() {
+        if (pulseLock) return;
+        const btn = document.getElementById('rescan-btn');
+        pulseLock = true;
+        if (btn) btn.innerText = "[ PULSING... ]";
+        
+        await syncVanguardSignal();
+        
+        setTimeout(() => {
+            pulseLock = false;
+            if (btn) btn.innerText = "[ Send Tactical Pulse ]";
+        }, 30000); // 30s Cooldown
+    }
 
-    // Re-sync every 2 minutes (API is lighter, so we can sync more often safely)
+    // INITIALIZE
+    // We wait for the window to load to make sure the IDs are ready
+    window.addEventListener('load', syncVanguardSignal);
     setInterval(syncVanguardSignal, 120000);
 
 let pulseLock = false;
