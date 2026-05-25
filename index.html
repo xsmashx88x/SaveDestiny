@@ -1,1 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Save Destiny | Eyes Up, Guardian</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --d1-blue: #0072ce;
+            --d2-gold: #f5af09;
+            --dark-bg: #0a0e12;
+            --card-bg: rgba(20, 26, 31, 0.95);
+            --text-main: #e0e0e0;
+            --text-dim: #a0a0a0;
+            --accent-glow: rgba(245, 175, 9, 0.3);
+        }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            background-image: 
+                radial-gradient(circle at center, rgba(0, 114, 206, 0.05) 0%, transparent 70%),
+                url('https://www.transparenttextures.com/patterns/stardust.png');
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Hero Section */
+        header {
+            text-align: center;
+            padding: 60px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logo-text {
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            background: linear-gradient(to bottom, #fff 0%, var(--text-dim) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sub-logo {
+            color: var(--d2-gold);
+            letter-spacing: 4px;
+            font-weight: 300;
+            margin-bottom: 30px;
+        }
+
+        .alert-banner {
+            background: rgba(139, 0, 0, 0.2);
+            border: 1px solid #ff4d4d;
+            padding: 20px;
+            border-radius: 4px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        /* Action Steps */
+        .step-card {
+            background: var(--card-bg);
+            border-left: 4px solid var(--d2-gold);
+            margin-bottom: 30px;
+            padding: 30px;
+            border-radius: 0 8px 8px 0;
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        .step-card:hover {
+            transform: translateX(10px);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .step-number {
+            font-size: 0.9rem;
+            color: var(--d2-gold);
+            text-transform: uppercase;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--d2-gold);
+            color: #000;
+            padding: 12px 30px;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 4px;
+            margin-top: 15px;
+            transition: background 0.2s;
+            text-transform: uppercase;
+        }
+
+        .btn:hover {
+            background: #fff;
+        }
+
+        .note {
+            display: block;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: #ffbaba;
+            font-style: italic;
+        }
+
+        /* Emotional Section */
+        .heart-section {
+            margin-top: 60px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            border: 1px dashed rgba(255,255,255,0.1);
+        }
+
+        .heart-section h3 {
+            color: var(--d1-blue);
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.8rem;
+        }
+
+        .story-text {
+            color: var(--text-dim);
+            font-size: 1.1rem;
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 80px;
+            padding-bottom: 40px;
+            font-size: 0.8rem;
+            color: #555;
+        }
+
+        .tricorn {
+            width: 40px;
+            margin-bottom: 20px;
+            opacity: 0.6;
+        }
+
+        /* Countdown style for June 9th */
+        .deadline {
+            color: #ff4d4d;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            .logo-text { font-size: 1.8rem; }
+            .step-card { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="logo-text">DESTINY</div>
+            <div class="sub-logo">PROTECT THE FRANCHISE</div>
+            <div class="alert-banner">
+                <p><strong>URGENT:</strong> We cannot let this legendary IP be trashed or forgotten. Sony needs to see our light before it's too late.</p>
+            </div>
+        </header>
+
+        <!-- Step 1 -->
+        <div class="step-card">
+            <span class="step-number">Step 01: The Petition</span>
+            <h2>Sign the Petition for Destiny 3</h2>
+            <p>We are calling on Sony to greenlight the development of Destiny 3. Show them the demand is real and the community is ready for the next chapter.</p>
+            <a href="https://www.change.org/p/petition-sony-to-develop-destiny-3" target="_blank" class="btn">Sign Petition</a>
+            <span class="note">⚠️ NOTE: You do NOT need to pay money to sign. Change.org asks for "contributions" but that only supports their website. Just signing and confirming your email is enough to count!</span>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step-card">
+            <span class="step-number">Step 02: Boost the Signal</span>
+            <h2>Share & Engage on Social Media</h2>
+            <p>Visibility is everything. Go to this post and give it a Like, Retweet, or Repost to help it reach the eyes of leadership.</p>
+            <a href="https://x.com/xsmashx88x/status/2058675513829335282?s=20" target="_blank" class="btn"><i class="fab fa-twitter"></i> Repost on X</a>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step-card" style="border-left-color: var(--d1-blue);">
+            <span class="step-number">Step 03: The Engagement (Most Important)</span>
+            <h2>Get In The Game</h2>
+            <p>The most powerful metric Sony looks at is <strong>Active Players</strong>. To show we aren't messing around, we need to flood the servers.</p>
+            <p><strong>The Mission:</strong> Starting now, play Destiny 2 for at least a few hours every week. Keep this momentum going through <span class="deadline">June 9th</span> and for the months following. High player counts are the only way to prove this IP is worth saving.</p>
+        </div>
+
+        <!-- Emotional Section -->
+        <div class="heart-section">
+            <h3>More Than Just A Game</h3>
+            <div class="story-text">
+                <p>Destiny has changed many of our lives. When the world shut down during COVID, the Tower was where we met. Through family losses, we found comfort in the grind. Some of us found our life partners, got married, and forged friendships that have lasted a decade.</p>
+                <br>
+                <p>We all have a story of what this game means to us. From the first time we stepped into the Cosmodrome in D1 to the final stand in D2. We cannot let this flame burn out. <strong>Eyes up, Guardians. Let's save our home.</strong></p>
+            </div>
+        </div>
+
+        <footer>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Destiny_logo.svg/1200px-Destiny_logo.svg.png" alt="Tricorn" class="tricorn" style="filter: invert(1); width: 30px;">
+            <p>This is a community-driven initiative. We are Guardians, and we do not go quietly into the night.</p>
+        </footer>
+    </div>
+
+</body>
+</html>
