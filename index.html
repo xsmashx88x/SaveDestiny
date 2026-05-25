@@ -475,70 +475,49 @@
     // -----------------------------
     // EXTRACTOR
     // -----------------------------
-    function extractSignatureCount(html) {
+function extractSignatureCount(html) {
+    // 1. Try to find the raw JSON state (Most Reliable)
+    // We break the strings below so the HTML parser doesn't get confused
+    const stateMarker = 'window.__INITIAL_STATE__=';
+    const endMarker = ';</' + 'script>'; 
 
-        // METHOD 1
-        let match = html.match(
-            /"signatureCount"\s*:\s*\{\s*"total"\s*:\s*(\d+)/i
-        );
-
-        if (match && match[1]) {
-            return parseInt(match[1], 10);
-        }
-
-        // METHOD 2
-        match = html.match(
-            /"display_count"\s*:\s*"?([\d,]+)"?/i
-        );
-
-        if (match && match[1]) {
-            return parseInt(
-                match[1].replace(/,/g, ''),
-                10
-            );
-        }
-
-        // METHOD 3
-        match = html.match(
-            /"supporters"\s*:\s*(\d+)/i
-        );
-
-        if (match && match[1]) {
-            return parseInt(match[1], 10);
-        }
-
-        // METHOD 4
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, "text/html");
-
-        const scripts = [...doc.querySelectorAll("script")];
-
-        for (const script of scripts) {
-
-            const txt = script.textContent || "";
-
-            let m = txt.match(
-                /"signatureCount"\s*:\s*\{\s*"total"\s*:\s*(\d+)/i
-            );
-
-            if (m && m[1]) {
-                return parseInt(m[1], 10);
+    if (html.includes(stateMarker)) {
+        try {
+            const start = html.indexOf(stateMarker) + stateMarker.length;
+            const end = html.indexOf(endMarker, start);
+            
+            if (end !== -1) {
+                const jsonText = html.substring(start, end);
+                const state = JSON.parse(jsonText);
+                
+                // Navigate the Change.org state tree
+                const petitions = state.shared.petitions;
+                const petitionId = Object.keys(petitions)[0];
+                const total = petitions[petitionId].signatureCount.total;
+                
+                if (total) return total;
             }
-
-            m = txt.match(
-                /"display_count"\s*:\s*"?([\d,]+)"?/i
-            );
-
-            if (m && m[1]) {
-                return parseInt(
-                    m[1].replace(/,/g, ''),
-                    10
-                );
-            }
+        } catch (e) {
+            console.warn("[VANGUARD] JSON extraction failed, trying regex...");
         }
-
-        return null;
     }
+
+    // 2. Regex Fallbacks (If JSON structure changed)
+    const patterns = [
+        /"signatureCount"\s*:\s*{\s*"total"\s*:\s*(\d+)/i,
+        /"display_count"\s*:\s*"?([\d,]+)"?/i,
+        /"total_signatures"\s*:\s*(\d+)/i
+    ];
+
+    for (const pattern of patterns) {
+        const match = html.match(pattern);
+        if (match && match[1]) {
+            return parseInt(match[1].replace(/,/g, ''), 10);
+        }
+    }
+
+    return null;
+}
 
     // -----------------------------
     // MANUAL REFRESH
@@ -575,7 +554,7 @@
     // -----------------------------
     // AUTO REFRESH
     // -----------------------------
-    setInterval(syncVanguard, 180000);
+    setInterval(syncVanguard, 600000);
 
 })();
     </script>
