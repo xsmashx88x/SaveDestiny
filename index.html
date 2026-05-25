@@ -257,8 +257,8 @@
     </div>
                 <div>
                     <a href="https://www.change.org/p/petition-sony-to-develop-destiny-3" target="_blank" rel="noopener noreferrer" class="btn">Sign the Petition</a>
-<button id="rescan-btn" onclick="manualScan()" style="background:transparent; border:none; color:var(--d2-gold); font-size:0.6rem; cursor:pointer; margin-top:10px; display:block; width:100%; text-align:center; letter-spacing:1px;">
-    [ RE-SCAN SIGNAL ]
+<button id="rescan-btn" onclick="tacticalRefresh()" style="background:transparent; border:none; color:var(--d2-gold); font-size:0.6rem; cursor:pointer; margin-top:10px; display:block; width:100%; text-align:center; letter-spacing:1.5px; text-transform:uppercase;">
+    [ Send Tactical Pulse ]
 </button>
                     <p class="note">IMPORTANT: Signing is free. Paying only supports the website, not the game. Just sign and exit.</p>
                 </div>
@@ -353,90 +353,85 @@
             window.open(url, "VanguardIntel", `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,status=no,toolbar=no`);
         }
 
-    async function getVanguardSignatures() {
-        const petitionUrl = "https://www.change.org/p/petition-sony-to-develop-destiny-3";
-        // We use a different proxy "Frequency" to try and bypass the jam
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(petitionUrl)}`;
-        
+    const PETITION_ID = "38318029"; 
+    const API_URL = `https://www.change.org/api-proxy/petitions/${PETITION_ID}`;
+    
+    // We use corsproxy.io - it's currently the fastest for JSON-specific pings
+    const PROXY_URL = `https://corsproxy.io/?${encodeURIComponent(API_URL)}`;
+
+    async function syncVanguardSignal() {
         const display = document.getElementById('sig-count');
         const status = document.getElementById('sig-status');
 
-        // CURRENT REAL BASELINE - Update this if the signal is lost for a long time
-        const manualBaseline = "199,203"; 
+        // 1. INSTANT LOAD: Immediately show the last known number from memory
+        const cachedCount = localStorage.getItem('vanguard_sigs_api');
+        if (cachedCount) {
+            display.innerText = Number(cachedCount).toLocaleString();
+            status.innerText = "// Signal: Syncing with Tower...";
+        }
 
         try {
-            const response = await fetch(proxyUrl);
-            if (!response.ok) throw new Error('Proxy Jammed');
+            // 2. ULTRA-LIGHT FETCH: Only pulls 1KB of data
+            const response = await fetch(PROXY_URL);
+            if (!response.ok) throw new Error('Jammed');
             
             const data = await response.json();
-            const html = data.contents;
-
-            // Scanning for the verified signatures label
-            const regex = /aria-label="([\d,]+) of verified signatures"/;
-            const match = html.match(regex);
-
-            if (match && match[1]) {
-                const liveCountString = match[1]; // e.g. "199,203"
-                const liveCountNum = parseInt(liveCountString.replace(/,/g, ''));
+            
+            // The API returns the exact number in 'total_signature_count'
+            if (data && data.total_signature_count) {
+                const count = data.total_signature_count;
                 
-                // GHOST DATA LOCK: Only update if the new number is higher than what we have saved
-                const savedCount = parseInt(localStorage.getItem('vanguard_high_watermark') || "0");
-                
-                if (liveCountNum >= savedCount) {
-                    display.innerText = liveCountString;
-                    localStorage.setItem('vanguard_high_watermark', liveCountNum);
-                    localStorage.setItem('vanguard_high_string', liveCountString);
-                }
-
+                // 3. SMOOTH UPDATE: Only update the UI if the number changed
+                display.innerText = Number(count).toLocaleString();
                 status.innerText = "// Signal: Secure Uplink Established";
                 status.style.color = "var(--d2-gold)";
-            } else {
-                throw new Error('Pattern Not Found');
+                
+                // Save to memory for the next instant load
+                localStorage.setItem('vanguard_sigs_api', count);
             }
-        } catch (e) {
-            console.warn("Uplink Jammed. Accessing Ghost Data...");
-            
-            // FALLBACK LOGIC
-            const savedString = localStorage.getItem('vanguard_high_string');
-            if (savedString) {
-                display.innerText = savedString;
-                status.innerText = "// Signal Weak: Using Ghost Data Relay";
-            } else {
-                display.innerText = manualBaseline;
-                status.innerText = "// Signal Lost: Using Last Verified Baseline";
-            }
+        } catch (err) {
+            console.warn("Uplink Jammed. Maintaining Ghost Signal.");
+            status.innerText = "// Signal Weak: Ghost Relay Active";
             status.style.color = "#ff6060";
+            
+            // Fallback to manual estimate if everything fails and cache is empty
+            if (!display.innerText || display.innerText === "SCANNING...") {
+                display.innerText = "199,203+"; 
+            }
         }
     }
 
-    getVanguardSignatures();
-    setInterval(getVanguardSignatures, 300000);
+    // Run immediately on page load
+    syncVanguardSignal();
 
-    let isScanning = false;
+    // Re-sync every 2 minutes (API is lighter, so we can sync more often safely)
+    setInterval(syncVanguardSignal, 120000);
 
-async function manualScan() {
+let pulseLock = false;
+
+async function tacticalRefresh() {
+    if (pulseLock) return; // Prevent spam
+    
     const btn = document.getElementById('rescan-btn');
+    pulseLock = true;
     
-    if (isScanning) return; // Prevent clicking while already working
-    
-    isScanning = true;
-    btn.innerText = "[ SCANNING... ]";
+    // Visual Feedback
+    btn.innerText = "[ Pulsing Vanguard Array... ]";
     btn.style.opacity = "0.5";
-    btn.style.cursor = "not-allowed";
 
-    await getVanguardSignatures(); // Run your existing function
+    // Run the sync script we already have
+    await syncVanguardSignal();
 
-    // Cooldown: The button stays disabled for 30 seconds
-    let seconds = 30;
-    const cooldown = setInterval(() => {
-        seconds--;
-        btn.innerText = `[ COOLING DOWN: ${seconds}s ]`;
-        if (seconds <= 0) {
-            clearInterval(cooldown);
-            isScanning = false;
-            btn.innerText = "[ RE-SCAN SIGNAL ]";
+    // Cooldown timer (30 seconds)
+    let cooldown = 30;
+    const timer = setInterval(() => {
+        cooldown--;
+        btn.innerText = `[ Array Recharging: ${cooldown}s ]`;
+        if (cooldown <= 0) {
+            clearInterval(timer);
+            pulseLock = false;
+            btn.innerText = "[ Send Tactical Pulse ]";
             btn.style.opacity = "1";
-            btn.style.cursor = "pointer";
         }
     }, 1000);
 }
