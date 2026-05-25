@@ -3,232 +3,277 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Save Destiny | Eyes Up, Guardian</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>DIRECTOR: SAVE THE LIGHT</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;500;700&family=Roboto+Condensed:wght@300;400;700&display=swap');
+
         :root {
-            --d1-blue: #0072ce;
             --d2-gold: #f5af09;
-            --dark-bg: #0a0e12;
-            --card-bg: rgba(20, 26, 31, 0.95);
-            --text-main: #e0e0e0;
-            --text-dim: #a0a0a0;
-            --accent-glow: rgba(245, 175, 9, 0.3);
+            --d1-blue: #00a0ff;
+            --bg-dark: #0f1214;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text-ghost: #e1e1e1;
+            --border-line: rgba(255, 255, 255, 0.1);
         }
 
-        * {
+        body, html {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        body {
-            background-color: var(--dark-bg);
+            background-color: var(--bg-dark);
+            color: var(--text-ghost);
+            font-family: 'Roboto Condensed', sans-serif;
+            height: 100%;
             background-image: 
-                radial-gradient(circle at center, rgba(0, 114, 206, 0.05) 0%, transparent 70%),
-                url('https://www.transparenttextures.com/patterns/stardust.png');
-            color: var(--text-main);
-            line-height: 1.6;
+                radial-gradient(circle at 50% 50%, rgba(0, 160, 255, 0.05) 0%, transparent 80%),
+                url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
             overflow-x: hidden;
         }
 
-        .container {
-            max-width: 900px;
+        /* Destiny UI Scanline Effect */
+        body::before {
+            content: " ";
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            z-index: 100;
+            background-size: 100% 4px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .director-container {
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 40px 20px;
-        }
-
-        /* Hero Section */
-        header {
-            text-align: center;
-            padding: 60px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .logo-text {
-            font-size: 3rem;
-            font-weight: 800;
-            letter-spacing: 8px;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-            background: linear-gradient(to bottom, #fff 0%, var(--text-dim) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .sub-logo {
-            color: var(--d2-gold);
-            letter-spacing: 4px;
-            font-weight: 300;
-            margin-bottom: 30px;
-        }
-
-        .alert-banner {
-            background: rgba(139, 0, 0, 0.2);
-            border: 1px solid #ff4d4d;
             padding: 20px;
-            border-radius: 4px;
-            margin-bottom: 40px;
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            justify-content: center;
         }
 
-        /* Action Steps */
-        .step-card {
-            background: var(--card-bg);
-            border-left: 4px solid var(--d2-gold);
+        header {
+            border-bottom: 1px solid var(--border-line);
+            padding-bottom: 10px;
             margin-bottom: 30px;
-            padding: 30px;
-            border-radius: 0 8px 8px 0;
-            transition: transform 0.3s ease;
-            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
-        .step-card:hover {
-            transform: translateX(10px);
-            box-shadow: 0 0 20px var(--accent-glow);
+        .header-left { display: flex; align-items: center; }
+
+        .tricorn {
+            width: 45px;
+            height: 45px;
+            fill: var(--text-ghost);
+            margin-right: 20px;
         }
 
-        .step-number {
-            font-size: 0.9rem;
-            color: var(--d2-gold);
+        .title-block h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 2.5rem;
+            letter-spacing: 6px;
+            margin: 0;
             text-transform: uppercase;
-            font-weight: bold;
-            display: block;
-            margin-bottom: 10px;
         }
 
-        h2 {
-            margin-bottom: 15px;
-            font-weight: 600;
+        .title-block p {
+            margin: 0;
+            color: var(--d2-gold);
+            letter-spacing: 2px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        /* The Grid Layout to prevent scrolling */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .quest-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-line);
+            padding: 20px;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 280px;
+        }
+
+        .quest-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--d2-gold);
+            transform: translateY(-5px);
+        }
+
+        .quest-card h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.4rem;
+            margin: 0 0 10px 0;
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--d2-gold);
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        .quest-card p {
+            font-size: 0.95rem;
+            line-height: 1.4;
+            color: #ccc;
+        }
+
+        .step-tag {
+            font-size: 0.7rem;
+            color: var(--d2-gold);
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
         }
 
         .btn {
-            display: inline-block;
-            background: var(--d2-gold);
-            color: #000;
-            padding: 12px 30px;
+            display: block;
+            text-align: center;
+            background: var(--text-ghost);
+            color: black;
             text-decoration: none;
+            padding: 10px;
             font-weight: bold;
-            border-radius: 4px;
-            margin-top: 15px;
-            transition: background 0.2s;
             text-transform: uppercase;
+            font-size: 0.8rem;
+            margin-top: 15px;
+            transition: 0.2s;
         }
 
         .btn:hover {
-            background: #fff;
+            background: var(--d2-gold);
         }
 
-        .note {
-            display: block;
-            margin-top: 15px;
-            font-size: 0.85rem;
-            color: #ffbaba;
-            font-style: italic;
+        .warning-note {
+            font-size: 0.75rem;
+            color: #ff6b6b;
+            margin-top: 10px;
+            line-height: 1.2;
         }
 
-        /* Emotional Section */
-        .heart-section {
-            margin-top: 60px;
-            padding: 40px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 15px;
-            border: 1px dashed rgba(255,255,255,0.1);
+        /* Transmission / Story Box */
+        .transmission {
+            background: rgba(0, 160, 255, 0.05);
+            border-left: 4px solid var(--d1-blue);
+            padding: 25px;
+            position: relative;
         }
 
-        .heart-section h3 {
+        .transmission h3 {
+            font-family: 'Oswald', sans-serif;
+            margin-top: 0;
+            letter-spacing: 2px;
             color: var(--d1-blue);
-            margin-bottom: 20px;
-            text-align: center;
-            font-size: 1.8rem;
+            text-transform: uppercase;
+        }
+
+        .transmission-content {
+            display: flex;
+            gap: 30px;
+            align-items: center;
         }
 
         .story-text {
-            color: var(--text-dim);
-            font-size: 1.1rem;
-            text-align: center;
-            max-width: 700px;
-            margin: 0 auto;
+            font-style: italic;
+            font-size: 1.05rem;
+            color: #bbb;
         }
 
-        /* Footer */
-        footer {
-            text-align: center;
-            margin-top: 80px;
-            padding-bottom: 40px;
-            font-size: 0.8rem;
-            color: #555;
+        .deadline-timer {
+            text-align: right;
+            min-width: 200px;
         }
 
-        .tricorn {
-            width: 40px;
-            margin-bottom: 20px;
-            opacity: 0.6;
-        }
+        .timer-label { font-size: 0.8rem; color: var(--d2-gold); text-transform: uppercase; }
+        .date { font-family: 'Oswald', sans-serif; font-size: 1.8rem; }
 
-        /* Countdown style for June 9th */
-        .deadline {
-            color: #ff4d4d;
-            font-weight: bold;
-        }
-
-        @media (max-width: 600px) {
-            .logo-text { font-size: 1.8rem; }
-            .step-card { padding: 20px; }
+        @media (max-width: 900px) {
+            .grid { grid-template-columns: 1fr; }
+            .director-container { height: auto; padding: 40px 20px; }
+            .transmission-content { flex-direction: column; text-align: center; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <div class="director-container">
         <header>
-            <div class="logo-text">DESTINY</div>
-            <div class="sub-logo">PROTECT THE FRANCHISE</div>
-            <div class="alert-banner">
-                <p><strong>URGENT:</strong> We cannot let this legendary IP be trashed or forgotten. Sony needs to see our light before it's too late.</p>
+            <div class="header-left">
+                <!-- SVG Tricorn -->
+                <svg class="tricorn" viewBox="0 0 100 100">
+                    <path d="M50 5L15 25V75L50 95L85 75V25L50 5ZM50 15L78 31V69L50 85L22 69V31L50 15ZM50 35L40 50L50 65L60 50L50 35Z"/>
+                </svg>
+                <div class="title-block">
+                    <h1>Destiny: The Final Stand</h1>
+                    <p>Priority Transmission: Save our Legacy</p>
+                </div>
             </div>
         </header>
 
-        <!-- Step 1 -->
-        <div class="step-card">
-            <span class="step-number">Step 01: The Petition</span>
-            <h2>Sign the Petition for Destiny 3</h2>
-            <p>We are calling on Sony to greenlight the development of Destiny 3. Show them the demand is real and the community is ready for the next chapter.</p>
-            <a href="https://www.change.org/p/petition-sony-to-develop-destiny-3" target="_blank" class="btn">Sign Petition</a>
-            <span class="note">⚠️ NOTE: You do NOT need to pay money to sign. Change.org asks for "contributions" but that only supports their website. Just signing and confirming your email is enough to count!</span>
-        </div>
+        <div class="grid">
+            <!-- Step 1 -->
+            <div class="quest-card">
+                <div>
+                    <div class="step-tag">Phase 01: Political Action</div>
+                    <h2>The Petition</h2>
+                    <p>Demand Sony develop Destiny 3. We need numbers to show the IP is alive. Signing is the first blow against the end of our journey.</p>
+                </div>
+                <div>
+                    <a href="https://www.change.org/p/petition-sony-to-develop-destiny-3" target="_blank" class="btn">Sign the Petition</a>
+                    <p class="warning-note">DO NOT PAY: Signing is free. Any payment prompts only support the hosting site, not the game.</p>
+                </div>
+            </div>
 
-        <!-- Step 2 -->
-        <div class="step-card">
-            <span class="step-number">Step 02: Boost the Signal</span>
-            <h2>Share & Engage on Social Media</h2>
-            <p>Visibility is everything. Go to this post and give it a Like, Retweet, or Repost to help it reach the eyes of leadership.</p>
-            <a href="https://x.com/xsmashx88x/status/2058675513829335282?s=20" target="_blank" class="btn"><i class="fab fa-twitter"></i> Repost on X</a>
-        </div>
+            <!-- Step 2 -->
+            <div class="quest-card">
+                <div>
+                    <div class="step-tag">Phase 02: Communications</div>
+                    <h2>Boost Signal</h2>
+                    <p>Social engagement creates noise that investors can't ignore. Like, Repost, and share the call to action across the system.</p>
+                </div>
+                <div>
+                    <a href="https://x.com/xsmashx88x/status/2058675513829335282?s=20" target="_blank" class="btn">Engage Transmission</a>
+                </div>
+            </div>
 
-        <!-- Step 3 -->
-        <div class="step-card" style="border-left-color: var(--d1-blue);">
-            <span class="step-number">Step 03: The Engagement (Most Important)</span>
-            <h2>Get In The Game</h2>
-            <p>The most powerful metric Sony looks at is <strong>Active Players</strong>. To show we aren't messing around, we need to flood the servers.</p>
-            <p><strong>The Mission:</strong> Starting now, play Destiny 2 for at least a few hours every week. Keep this momentum going through <span class="deadline">June 9th</span> and for the months following. High player counts are the only way to prove this IP is worth saving.</p>
-        </div>
-
-        <!-- Emotional Section -->
-        <div class="heart-section">
-            <h3>More Than Just A Game</h3>
-            <div class="story-text">
-                <p>Destiny has changed many of our lives. When the world shut down during COVID, the Tower was where we met. Through family losses, we found comfort in the grind. Some of us found our life partners, got married, and forged friendships that have lasted a decade.</p>
-                <br>
-                <p>We all have a story of what this game means to us. From the first time we stepped into the Cosmodrome in D1 to the final stand in D2. We cannot let this flame burn out. <strong>Eyes up, Guardians. Let's save our home.</strong></p>
+            <!-- Step 3 -->
+            <div class="quest-card">
+                <div>
+                    <div class="step-tag">Phase 03: Field Operations</div>
+                    <h2>Active Duty</h2>
+                    <p>The strongest data we have is player count. Starting now, play D2 for a few hours every week. Show Sony we aren't leaving.</p>
+                </div>
+                <div>
+                    <div class="btn" style="background: var(--d2-gold); cursor: default;">Status: Required</div>
+                    <p class="warning-note" style="color: var(--text-ghost)">Maintain activity through June 9th and beyond.</p>
+                </div>
             </div>
         </div>
 
-        <footer>
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Destiny_logo.svg/1200px-Destiny_logo.svg.png" alt="Tricorn" class="tricorn" style="filter: invert(1); width: 30px;">
-            <p>This is a community-driven initiative. We are Guardians, and we do not go quietly into the night.</p>
-        </footer>
+        <div class="transmission">
+            <h3>Incoming Lore Tab: Why We Fight</h3>
+            <div class="transmission-content">
+                <div class="story-text">
+                    "Destiny is more than code. It was our sanctuary during COVID. It’s where we mourned lost family, where we celebrated marriages, and where we found our best friends. Every Guardian has a story. We don't just play for the loot—we play for each other. Don't let this legendary IP be forgotten."
+                </div>
+                <div class="deadline-timer">
+                    <div class="timer-label">Critical Deadline</div>
+                    <div class="date">JUNE 09, 2024</div>
+                    <div class="timer-label">Eyes Up, Guardian</div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
 </body>
