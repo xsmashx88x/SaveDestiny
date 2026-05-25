@@ -257,9 +257,9 @@
     </div>
                 <div>
                     <a href="https://www.change.org/p/petition-sony-to-develop-destiny-3" target="_blank" rel="noopener noreferrer" class="btn">Sign the Petition</a>
-                       <button onclick="getVanguardSignatures()" style="background:transparent; border:none; color:var(--d2-gold); font-size:0.6rem; cursor:pointer; margin-top:10px; display:block; width:100%; text-align:center; letter-spacing:1px;">
-        [ RE-SCAN SIGNAL ]
-    </button>
+<button id="rescan-btn" onclick="manualScan()" style="background:transparent; border:none; color:var(--d2-gold); font-size:0.6rem; cursor:pointer; margin-top:10px; display:block; width:100%; text-align:center; letter-spacing:1px;">
+    [ RE-SCAN SIGNAL ]
+</button>
                     <p class="note">IMPORTANT: Signing is free. Paying only supports the website, not the game. Just sign and exit.</p>
                 </div>
             </div>
@@ -409,6 +409,35 @@
 
     // Refresh every 5 minutes
     setInterval(getVanguardSignatures, 300000);
+
+    let isScanning = false;
+
+async function manualScan() {
+    const btn = document.getElementById('rescan-btn');
+    
+    if (isScanning) return; // Prevent clicking while already working
+    
+    isScanning = true;
+    btn.innerText = "[ SCANNING... ]";
+    btn.style.opacity = "0.5";
+    btn.style.cursor = "not-allowed";
+
+    await getVanguardSignatures(); // Run your existing function
+
+    // Cooldown: The button stays disabled for 30 seconds
+    let seconds = 30;
+    const cooldown = setInterval(() => {
+        seconds--;
+        btn.innerText = `[ COOLING DOWN: ${seconds}s ]`;
+        if (seconds <= 0) {
+            clearInterval(cooldown);
+            isScanning = false;
+            btn.innerText = "[ RE-SCAN SIGNAL ]";
+            btn.style.opacity = "1";
+            btn.style.cursor = "pointer";
+        }
+    }, 1000);
+}
     </script>
 
     <p class="note" style="margin-top: 30px; text-align: center; color: #666; font-style: normal; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
