@@ -227,6 +227,12 @@
             background: var(--d2-gold);
         }
 
+/* Keeps boxes same height and centers specific content */
+.centered-card .btn {
+    width: 100%;
+    box-sizing: border-box; /* Prevents button from overflowing */
+}
+
     </style>
 </head>
 <body>
@@ -278,19 +284,17 @@
 </div>
 
             <!-- Step 2 -->
-            <div class="milestone-card">
-                <div>
-                    <span class="step-label">Commnet Link</span>
-                    <h2>Boost Signal</h2>
-                    <p>Visibility creates pressure. Engagement on social platforms ensures the message reaches Xbox, which sorry is only one that could save the IP at this point</p>
-                </div>
-                                <div>
-                    <a href="https://x.com/xsmashx88x/status/2058868965661692139?s=20" target="_blank" rel="noopener noreferrer" class="btn">Like / Repost on X (newest)</a>
-                </div>
-                <div>
-                    <a href="https://x.com/xsmashx88x/status/2058675513829335282?s=20" target="_blank" rel="noopener noreferrer" class="btn">Like / Repost on X</a>
-                </div>
-            </div>
+<div class="milestone-card centered-card">
+    <div>
+        <span class="step-label">Commnet Link</span>
+        <h2>Boost Signal</h2>
+        <p>Visibility creates pressure. Engagement on social platforms ensures the message reaches Xbox, which sorry is only one that could save the IP at this point</p>
+    </div>
+    <div style="width: 100%;">
+        <a href="https://x.com/xsmashx88x/status/2058868965661692139?s=20" target="_blank" rel="noopener noreferrer" class="btn" style="margin-bottom: 10px;">Like / Repost on X (newest)</a>
+        <a href="https://x.com/xsmashx88x/status/2058675513829335282?s=20" target="_blank" rel="noopener noreferrer" class="btn">Like / Repost on X</a>
+    </div>
+</div>
 
             <!-- Step 3 -->
             <div class="milestone-card">
