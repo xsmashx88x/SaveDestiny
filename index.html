@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DIRECTOR: SAVE THE LIGHT</title>
+    <title>DIRECTOR | SAVE THE LIGHT</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;500;700&family=Roboto+Condensed:wght@300;400;700&display=swap');
 
         :root {
             --d2-gold: #f5af09;
             --d1-blue: #00a0ff;
-            --bg-dark: #0f1214;
-            --card-bg: rgba(255, 255, 255, 0.05);
+            --bg-dark: #0b0e10;
+            --card-bg: rgba(255, 255, 255, 0.03);
             --text-ghost: #e1e1e1;
+            --text-dim: #999;
             --border-line: rgba(255, 255, 255, 0.1);
         }
 
@@ -24,256 +25,267 @@
             font-family: 'Roboto Condensed', sans-serif;
             height: 100%;
             background-image: 
-                radial-gradient(circle at 50% 50%, rgba(0, 160, 255, 0.05) 0%, transparent 80%),
+                radial-gradient(circle at 50% 10%, rgba(245, 175, 9, 0.05) 0%, transparent 50%),
                 url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
             overflow-x: hidden;
         }
 
-        /* Destiny UI Scanline Effect */
-        body::before {
+        /* Scanline Effect */
+        body::after {
             content: " ";
             position: fixed;
             top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.05) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.01), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.01));
             z-index: 100;
-            background-size: 100% 4px, 3px 100%;
+            background-size: 100% 2px, 3px 100%;
             pointer-events: none;
+            opacity: 0.3;
         }
 
-        .director-container {
-            max-width: 1200px;
+        .container {
+            max-width: 1100px;
             margin: 0 auto;
             padding: 20px;
             display: flex;
             flex-direction: column;
-            height: 100vh;
-            justify-content: center;
+            min-height: 100vh;
         }
 
         header {
-            border-bottom: 1px solid var(--border-line);
-            padding-bottom: 10px;
-            margin-bottom: 30px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            border-bottom: 2px solid var(--border-line);
+            padding: 20px 0;
+            margin-bottom: 30px;
         }
 
-        .header-left { display: flex; align-items: center; }
-
         .tricorn {
-            width: 45px;
-            height: 45px;
+            width: 50px;
+            height: 50px;
             fill: var(--text-ghost);
             margin-right: 20px;
         }
 
-        .title-block h1 {
+        .header-text h1 {
             font-family: 'Oswald', sans-serif;
-            font-size: 2.5rem;
-            letter-spacing: 6px;
+            font-size: 2.2rem;
+            letter-spacing: 5px;
             margin: 0;
             text-transform: uppercase;
         }
 
-        .title-block p {
+        .header-text p {
             margin: 0;
             color: var(--d2-gold);
             letter-spacing: 2px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
         }
 
-        /* The Grid Layout to prevent scrolling */
-        .grid {
+        /* Steps Grid */
+        .milestones-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
+            gap: 15px;
             margin-bottom: 30px;
         }
 
-        .quest-card {
+        .milestone-card {
             background: var(--card-bg);
             border: 1px solid var(--border-line);
             padding: 20px;
             position: relative;
-            transition: all 0.3s ease;
-            cursor: pointer;
+            transition: all 0.2s ease;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-height: 280px;
         }
 
-        .quest-card:hover {
-            background: rgba(255, 255, 255, 0.1);
+        .milestone-card:hover {
             border-color: var(--d2-gold);
-            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.07);
         }
 
-        .quest-card h2 {
-            font-family: 'Oswald', sans-serif;
-            font-size: 1.4rem;
-            margin: 0 0 10px 0;
-            text-transform: uppercase;
-            border-bottom: 2px solid var(--d2-gold);
-            display: inline-block;
-            padding-bottom: 5px;
+        .milestone-card::before {
+            content: "◆";
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            color: var(--d2-gold);
+            background: var(--bg-dark);
+            padding: 0 5px;
+            font-size: 0.8rem;
         }
 
-        .quest-card p {
-            font-size: 0.95rem;
-            line-height: 1.4;
-            color: #ccc;
-        }
-
-        .step-tag {
+        .step-label {
             font-size: 0.7rem;
             color: var(--d2-gold);
-            font-weight: bold;
-            margin-bottom: 10px;
             text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .milestone-card h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.3rem;
+            margin: 0 0 10px 0;
+            text-transform: uppercase;
+            color: #fff;
+        }
+
+        .milestone-card p {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: var(--text-dim);
+            margin-bottom: 15px;
         }
 
         .btn {
             display: block;
+            background: #fff;
+            color: #000;
             text-align: center;
-            background: var(--text-ghost);
-            color: black;
             text-decoration: none;
             padding: 10px;
             font-weight: bold;
             text-transform: uppercase;
             font-size: 0.8rem;
-            margin-top: 15px;
-            transition: 0.2s;
+            transition: 0.3s;
         }
 
         .btn:hover {
             background: var(--d2-gold);
         }
 
-        .warning-note {
+        .note {
             font-size: 0.75rem;
-            color: #ff6b6b;
+            color: #ff6060;
             margin-top: 10px;
             line-height: 1.2;
+            font-style: italic;
         }
 
-        /* Transmission / Story Box */
-        .transmission {
-            background: rgba(0, 160, 255, 0.05);
-            border-left: 4px solid var(--d1-blue);
-            padding: 25px;
+        /* Story/Lore Section */
+        .lore-section {
+            background: rgba(0, 160, 255, 0.03);
+            border: 1px solid rgba(0, 160, 255, 0.2);
+            padding: 30px;
             position: relative;
+            margin-bottom: 20px;
         }
 
-        .transmission h3 {
+        .lore-section h3 {
             font-family: 'Oswald', sans-serif;
-            margin-top: 0;
-            letter-spacing: 2px;
             color: var(--d1-blue);
             text-transform: uppercase;
+            margin-top: 0;
+            letter-spacing: 3px;
+            border-bottom: 1px solid rgba(0, 160, 255, 0.2);
+            display: inline-block;
+            padding-bottom: 5px;
         }
 
-        .transmission-content {
-            display: flex;
-            gap: 30px;
-            align-items: center;
+        .story-content {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #ccc;
+            max-width: 900px;
         }
 
-        .story-text {
-            font-style: italic;
-            font-size: 1.05rem;
-            color: #bbb;
+        .story-content strong {
+            color: var(--d2-gold);
         }
 
-        .deadline-timer {
-            text-align: right;
-            min-width: 200px;
+        footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.7rem;
+            color: #444;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
-        .timer-label { font-size: 0.8rem; color: var(--d2-gold); text-transform: uppercase; }
-        .date { font-family: 'Oswald', sans-serif; font-size: 1.8rem; }
-
-        @media (max-width: 900px) {
-            .grid { grid-template-columns: 1fr; }
-            .director-container { height: auto; padding: 40px 20px; }
-            .transmission-content { flex-direction: column; text-align: center; }
+        /* Responsive */
+        @media (max-width: 850px) {
+            .milestones-grid { grid-template-columns: 1fr; }
+            .header-text h1 { font-size: 1.5rem; }
         }
     </style>
 </head>
 <body>
 
-    <div class="director-container">
+    <div class="container">
         <header>
-            <div class="header-left">
-                <!-- SVG Tricorn -->
-                <svg class="tricorn" viewBox="0 0 100 100">
-                    <path d="M50 5L15 25V75L50 95L85 75V25L50 5ZM50 15L78 31V69L50 85L22 69V31L50 15ZM50 35L40 50L50 65L60 50L50 35Z"/>
-                </svg>
-                <div class="title-block">
-                    <h1>Destiny: The Final Stand</h1>
-                    <p>Priority Transmission: Save our Legacy</p>
-                </div>
+            <!-- SVG Tricorn Logo (Embedded so it won't break) -->
+            <svg class="tricorn" viewBox="0 0 100 100">
+                <path d="M50 2L15 22V78L50 98L85 78V22L50 2ZM50 12L78 28V72L50 88L22 72V28L50 12ZM50 32C42 45 42 55 50 68C58 55 58 45 50 32Z"/>
+            </svg>
+            <div class="header-text">
+                <h1>Destiny: Priority One</h1>
+                <p>System Alert: Save the Franchise from the Deep</p>
             </div>
         </header>
 
-        <div class="grid">
+        <div class="milestones-grid">
             <!-- Step 1 -->
-            <div class="quest-card">
+            <div class="milestone-card">
                 <div>
-                    <div class="step-tag">Phase 01: Political Action</div>
+                    <span class="step-label">Vanguard Directive</span>
                     <h2>The Petition</h2>
-                    <p>Demand Sony develop Destiny 3. We need numbers to show the IP is alive. Signing is the first blow against the end of our journey.</p>
+                    <p>Demand Sony develop Destiny 3. We need every Guardian to put their name on the record. Numbers are the only thing that will change the course.</p>
                 </div>
                 <div>
                     <a href="https://www.change.org/p/petition-sony-to-develop-destiny-3" target="_blank" class="btn">Sign the Petition</a>
-                    <p class="warning-note">DO NOT PAY: Signing is free. Any payment prompts only support the hosting site, not the game.</p>
+                    <p class="note">IMPORTANT: Signing is free. Paying only supports the website, not the game. Just sign and exit.</p>
                 </div>
             </div>
 
             <!-- Step 2 -->
-            <div class="quest-card">
+            <div class="milestone-card">
                 <div>
-                    <div class="step-tag">Phase 02: Communications</div>
+                    <span class="step-label">Commnet Link</span>
                     <h2>Boost Signal</h2>
-                    <p>Social engagement creates noise that investors can't ignore. Like, Repost, and share the call to action across the system.</p>
+                    <p>Visibility creates pressure. Engagement on social platforms ensures the message reaches the highest levels of Sony leadership.</p>
                 </div>
                 <div>
-                    <a href="https://x.com/xsmashx88x/status/2058675513829335282?s=20" target="_blank" class="btn">Engage Transmission</a>
+                    <a href="https://x.com/xsmashx88x/status/2058675513829335282?s=20" target="_blank" class="btn">Like / Repost on X</a>
                 </div>
             </div>
 
             <!-- Step 3 -->
-            <div class="quest-card">
+            <div class="milestone-card">
                 <div>
-                    <div class="step-tag">Phase 03: Field Operations</div>
-                    <h2>Active Duty</h2>
-                    <p>The strongest data we have is player count. Starting now, play D2 for a few hours every week. Show Sony we aren't leaving.</p>
+                    <span class="step-label">Field Op</span>
+                    <h2>Active Participation</h2>
+                    <p>The most vital metric is player activity. Log in and play Destiny 2 for a few hours every week starting now.</p>
                 </div>
                 <div>
-                    <div class="btn" style="background: var(--d2-gold); cursor: default;">Status: Required</div>
-                    <p class="warning-note" style="color: var(--text-ghost)">Maintain activity through June 9th and beyond.</p>
+                    <div style="background: rgba(245, 175, 9, 0.2); color: var(--d2-gold); text-align: center; padding: 10px; font-weight: bold; border: 1px solid var(--d2-gold); font-size: 0.8rem;">
+                        TIMELINE: THRU JUNE 9
+                    </div>
+                    <p class="note" style="color: #bbb;">Show Sony we are not messing around.</p>
                 </div>
             </div>
         </div>
 
-        <div class="transmission">
-            <h3>Incoming Lore Tab: Why We Fight</h3>
-            <div class="transmission-content">
-                <div class="story-text">
-                    "Destiny is more than code. It was our sanctuary during COVID. It’s where we mourned lost family, where we celebrated marriages, and where we found our best friends. Every Guardian has a story. We don't just play for the loot—we play for each other. Don't let this legendary IP be forgotten."
-                </div>
-                <div class="deadline-timer">
-                    <div class="timer-label">Critical Deadline</div>
-                    <div class="date">JUNE 09, 2024</div>
-                    <div class="timer-label">Eyes Up, Guardian</div>
-                </div>
+        <!-- Your Requested Text in Lore Format -->
+        <div class="lore-section">
+            <h3>More Than Just A Game</h3>
+            <div class="story-content">
+                <p>Destiny has changed many of our lives. When the world shut down during COVID, the Tower was where we met. Through family losses, we found comfort in the grind. Some of us found our life partners, got married, and forged friendships that have lasted a decade.</p>
+                
+                <p>We all have a story on what Destiny means to us. From the first time we stepped into the Cosmodrome in D1 to the final stand in D2. We cannot let this legendary IP be trashed and forgotten. We cannot let this flame burn out.</p>
+                
+                <p><strong>Eyes up, Guardians. Let's save our home.</strong></p>
             </div>
         </div>
 
+        <footer>
+            Active User Verification Required // Sequence 001-99 // Per Audacia Ad Astra
+        </footer>
     </div>
 
 </body>
