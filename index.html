@@ -86,12 +86,12 @@
         }
 
         /* Steps Grid */
-        .milestones-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 30px;
-        }
+.milestones-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
 
         .milestone-card {
             background: var(--card-bg);
@@ -233,6 +233,17 @@
     box-sizing: border-box; /* Prevents button from overflowing */
 }
 
+.middle-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* This makes both middle cards the same size so they look balanced */
+.middle-stack .milestone-card {
+    flex: 1;
+}
+
     </style>
 </head>
 <body>
@@ -284,16 +295,35 @@
 </div>
 
             <!-- Step 2 -->
-<div class="milestone-card centered-card">
-    <div>
-        <span class="step-label">Commnet Link</span>
-        <h2>Boost Signal</h2>
-        <p>Visibility creates pressure. Engagement on social platforms ensures the message reaches Xbox, which sorry is only one that could save the IP at this point</p>
+<!-- MIDDLE COLUMN: STACKED SOCIAL UPLINKS -->
+<div class="middle-stack">
+    
+    <!-- Smash's Primary Uplink -->
+    <div class="milestone-card">
+        <div>
+            <span class="step-label">Primary Uplink</span>
+            <h2>Boost Signal</h2>
+            <p>Visibility creates pressure. Engagement on Smash's posts ensures the message reaches the highest levels of Xbox leadership.</p>
+        </div>
+        <div>
+            <a href="https://x.com/xsmashx88x/status/2058868965661692139?s=20" target="_blank" rel="noopener noreferrer" class="btn" style="margin-bottom: 10px;">Smash's Newest Post</a>
+            <a href="https://x.com/xsmashx88x/status/2058675513829335282?s=20" target="_blank" rel="noopener noreferrer" class="btn">Smash's Primary Post</a>
+        </div>
     </div>
-    <div style="width: 100%;">
-        <a href="https://x.com/xsmashx88x/status/2058868965661692139?s=20" target="_blank" rel="noopener noreferrer" class="btn" style="margin-bottom: 10px;">Like / Repost on X (newest)</a>
-        <a href="https://x.com/xsmashx88x/status/2058675513829335282?s=20" target="_blank" rel="noopener noreferrer" class="btn">Like / Repost on X</a>
+
+    <!-- Others Call to Action -->
+    <div class="milestone-card">
+        <div>
+            <span class="step-label">Commnet Link</span>
+            <h2>Others Call to Action</h2>
+            <p>Amplify the community. Reach out to PlayStation directly and support fellow Guardians speaking up for the franchise.</p>
+        </div>
+        <div>
+            <a href="https://x.com/PlayStationUK/status/2058956481870102981?s=20" target="_blank" rel="noopener noreferrer" class="btn" style="margin-bottom: 10px;">Let Sony know your feelings</a>
+            <a href="https://x.com/JakeParkerLIVE/status/2059048222862213314?s=20" target="_blank" rel="noopener noreferrer" class="btn">Like Jake Parker's Post</a>
+        </div>
     </div>
+
 </div>
 
             <!-- Step 3 -->
